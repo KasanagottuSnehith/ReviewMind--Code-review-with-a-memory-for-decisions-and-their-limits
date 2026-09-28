@@ -1,0 +1,26 @@
+{
+  "verified_at": "2026-09-28T16:10:00+05:30",
+  "environment": "local Windows workspace, bundled Node.js 24.19.0",
+  "tests": {
+    "status": "passed",
+    "files": 2,
+    "passed": 52,
+    "failed": 0,
+    "coverage_scope": "decision boundaries, input/output validation, timeout AST behavior, roles, PostgreSQL transactions, RLS, idempotency, approval conflict, revision race, lease recovery, reset history"
+  },
+  "typecheck": "passed",
+  "production_build": "passed",
+  "production_startup": "passed",
+  "http": {
+    "health": "passed",
+    "application_html": "passed",
+    "fixture_count": 5
+  },
+  "dependency_audit": {
+    "status": "passed",
+    "known_vulnerabilities": 0
+  },
+  "real_provider_integration": "blocked: CONFIGURATION_MISSING",
+  "browser_walkthrough": "not run: browser automation permission declined",
+  "provider_evaluation_36": "not run"
+}

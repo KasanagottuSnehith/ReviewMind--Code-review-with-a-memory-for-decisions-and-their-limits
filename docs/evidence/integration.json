@@ -1,0 +1,11 @@
+{
+  "started_at": "2026-09-28T05:18:15.553Z",
+  "kind": "real-provider-integration",
+  "status": "blocked",
+  "steps": [],
+  "error": {
+    "code": "CONFIGURATION_MISSING",
+    "message": "Check configured accounts and the last completed step. No provider secrets are recorded."
+  },
+  "finished_at": "2026-09-28T05:18:15.575Z"
+}
