@@ -98,7 +98,9 @@ See [docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md) for the three-minute narration.
 
 Use the included `Dockerfile` on a service that keeps one Node process running. Configure the same server environment and set the health check to `/health`. Supabase and Hindsight remain managed external services. Do not deploy the worker to an ephemeral request-only platform.
 
-A public deployment was not created because hosting requirements and paid-resource authorization were not confirmed. Local startup is verified; live external integrations remain blocked until account configuration is supplied.
+Run `npm run migrate` before starting updated workers. Migration `002_worker_protocol.sql` prevents older workers from claiming new jobs: the current worker uses the `v2:` queue protocol. Retired workers receive no jobs. `/health` reports the loaded review prompt version; current generation attempts also record that version privately for troubleshooting. Stop any outdated processes after upgrading.
+
+A public deployment was not created because hosting requirements and paid-resource authorization were not confirmed. Local startup is verified. The real-provider integration proof now passes with configured accounts; the complete browser learning journey and 36-case comparison run remain pending.
 
 ## Limits and honest claims
 

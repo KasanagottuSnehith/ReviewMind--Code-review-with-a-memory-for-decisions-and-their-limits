@@ -1,0 +1,21 @@
+{
+  "checked_at": "2026-09-28T10:45:28.527183+00:00",
+  "post_characters": 626,
+  "post_utf16_code_units": 626,
+  "post_under_800": true,
+  "article_words_excluding_code_and_editorial_comments": 1238,
+  "article_words_including_code_excluding_editorial_comments": 1273,
+  "title_words": 7,
+  "forbidden_term_absent": true,
+  "code_excerpt_count": 3,
+  "all_excerpts_match_source": true,
+  "required_article_links_present": true,
+  "first_comment_pending_article_url": true,
+  "provider_proof": "blocked: CONFIGURATION_MISSING",
+  "local_test_rerun": {
+    "files": 2,
+    "passed": 52,
+    "failed": 0
+  },
+  "published": false
+}

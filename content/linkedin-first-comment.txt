@@ -1,0 +1,2 @@
+Technical write-up: [ARTICLE_URL_PENDING_PUBLICATION]
+Hindsight's open-source repository: https://github.com/vectorize-io/hindsight

@@ -9,6 +9,7 @@ import {parseReviewInput,normalizePath} from '../../../packages/contracts/src/in
 import {validateDecision} from '../../../packages/decision-engine/src/index.js';
 import {demoFixtures,seedEvents,INITIAL_TIME} from '../../../fixtures/demo.js';
 import {memory} from './worker.js';
+import {PROMPT_VERSION} from '../../../packages/reviewer/src/index.js';
 const uuid=z.string().uuid();
 const hash=(v:unknown)=>createHash('sha256').update(JSON.stringify(v)).digest('hex');
 const rates=new Map<string,{at:number;count:number}>();
@@ -16,7 +17,7 @@ export const app=express();
 app.disable('x-powered-by');
 app.use((req,res,next)=>{res.locals.requestId=randomUUID();res.setHeader('X-Request-Id',res.locals.requestId);res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Referrer-Policy','no-referrer');next();});
 app.use(express.json({limit:'40kb'}));
-app.get('/health',(_req,res)=>res.json({status:'ok',service:'reviewmind',configuration:configurationStatus()}));
+app.get('/health',(_req,res)=>res.json({status:'ok',service:'reviewmind',prompt_version:PROMPT_VERSION,configuration:configurationStatus()}));
 app.get('/api/config',(_req,res)=>res.json({request_id:res.locals.requestId,supabase_url:config.supabaseUrl,public_key:config.publicKey,configured:configurationStatus(),demo_mode:config.demo}));
 app.get('/api/fixtures',(_req,res)=>res.json({request_id:res.locals.requestId,fixtures:demoFixtures}));
 app.use('/api',async(req,res,next)=>{

@@ -29,16 +29,32 @@ export const decisionDraftJsonSchema = {
     kind: { type: 'string', enum: ['convention', 'temporary_exception', 'correction'] },
     rule_key: { type: 'string' }, rationale: { type: 'string' },
     scope: { type: 'object', additionalProperties: false, properties: {
-      path_glob: { type: 'string' }, dependency_name: { type: ['string', 'null'] },
-      version_range: { type: ['string', 'null'] }, effective_from: { type: 'string' },
-      expires_at: { type: ['string', 'null'] },
+      // The configured Cloud endpoint returned 500 for array-valued types and
+      // string nulls with anyOf. Keep nullable conversion at our boundary.
+      path_glob: { type: 'string' }, dependency_name: { type: 'string', description: 'Dependency name, or an empty string when absent.' },
+      version_range: { type: 'string', description: 'Semver range, or an empty string when absent.' }, effective_from: { type: 'string' },
+      expires_at: { type: 'string', description: 'UTC ISO expiry, required for temporary exceptions. Empty string only for non-expiring decisions.' },
       prerequisites: { type: 'array', items: { type: 'object', additionalProperties: false,
         properties: { kind: { type: 'string', enum: ['timeout_ms', 'context_source'] }, value: { type: 'string' } },
         required: ['kind', 'value'] } }
     }, required: ['path_glob', 'dependency_name', 'version_range', 'effective_from', 'expires_at', 'prerequisites'] },
-    source_event_ids: { type: 'array', items: { type: 'string' } }, supersedes_id: { type: ['string','null'] }
+    source_event_ids: { type: 'array', minItems: 1, items: { type: 'string' }, description: 'The selected source event UUIDs, copied exactly and stated explicitly in the answer.' },
+    supersedes_id: { type: 'string', description: 'UUID of an explicitly supplied predecessor, or an empty string when no predecessor is supplied.' }
   }, required: ['kind','rule_key','rationale','scope','source_event_ids','supersedes_id']
 };
+/** Translate only documented nullable wire fields; never invent missing sources. */
+export function parseReflectedDecision(raw: unknown) {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return decisionContentSchema.safeParse(raw);
+  const value={...raw} as Record<string,unknown>;
+  const nullable=(v:unknown)=>v===''||v==='null'?null:v;
+  value.supersedes_id=nullable(value.supersedes_id);
+  if(value.scope && typeof value.scope==='object' && !Array.isArray(value.scope)) {
+    const scope={...value.scope} as Record<string,unknown>;
+    for(const key of ['dependency_name','version_range','expires_at'])scope[key]=nullable(scope[key]);
+    value.scope=scope;
+  }
+  return decisionContentSchema.safeParse(value);
+}
 export type DecisionContent = z.infer<typeof decisionContentSchema>;
 export type Decision = DecisionContent & {
   id: string; repo_id: string; demo_run_id: string; version: number;

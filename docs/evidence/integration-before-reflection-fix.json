@@ -1,0 +1,40 @@
+{
+  "started_at": "2026-09-28T15:43:43.834Z",
+  "kind": "real-provider-integration",
+  "status": "failed",
+  "steps": [
+    {
+      "step": "supabase_auth",
+      "status": "passed"
+    },
+    {
+      "step": "supabase_persistence_rls",
+      "status": "passed",
+      "repo_id": "b2f3c569-21d8-4058-a8f1-64056e970c2f"
+    },
+    {
+      "step": "retain",
+      "status": "passed",
+      "event_id": "f0e70c10-68fc-4eb7-9bcb-6e1d8c3d4ea5",
+      "operation_id": "7636a154-ed10-4e74-bab3-e44f26d596ff"
+    },
+    {
+      "step": "fresh_client_recall_provenance",
+      "status": "passed",
+      "fact_ids": [
+        "89e37b78-c519-4982-b6d9-90324903ed91"
+      ],
+      "event_id": "f0e70c10-68fc-4eb7-9bcb-6e1d8c3d4ea5",
+      "ingestion_ready_ms": 5634
+    },
+    {
+      "step": "document_resolution",
+      "status": "passed"
+    }
+  ],
+  "error": {
+    "code": "INTEGRATION_FAILED",
+    "message": "Check configured accounts and the last completed step. No provider secrets are recorded."
+  },
+  "finished_at": "2026-09-28T15:43:55.040Z"
+}

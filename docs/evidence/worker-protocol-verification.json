@@ -1,0 +1,207 @@
+{
+  "checked_at": "2026-09-28T16:28:45.464Z",
+  "scope": "Three consecutive authenticated requests through the Vite browser proxy with real Hindsight recall and generation. Not a full browser approval-loop walkthrough.",
+  "health": {
+    "status": "ok",
+    "service": "reviewmind",
+    "prompt_version": "reviewmind-2026-09-28-v2",
+    "configuration": {
+      "database": true,
+      "memory": true,
+      "generation": true
+    }
+  },
+  "retired_worker_blocked": true,
+  "results": [
+    {
+      "id": "b1f43fe3-31f4-43d9-a815-19c0b965c0d8",
+      "status": "complete",
+      "metadata": {
+        "model": "openai/gpt-oss-120b",
+        "usage": [
+          {
+            "queue_time": 0.3512502,
+            "total_time": 1.591710978,
+            "prompt_time": 0.117535243,
+            "total_tokens": 1892,
+            "prompt_tokens": 1198,
+            "completion_time": 1.474175735,
+            "completion_tokens": 694,
+            "completion_tokens_details": {
+              "reasoning_tokens": 477
+            }
+          }
+        ],
+        "recall": {
+          "status": "no_approved_memory",
+          "verified": 9,
+          "retrieved": 20
+        },
+        "attempts": 1,
+        "settings": {
+          "temperature": 0,
+          "max_completion_tokens": 2500
+        },
+        "review_ms": 4294,
+        "input_hash": "b14577d3752a2b30ba5dda27b8387c055afe18295b5c623b24faed94a1f251c5",
+        "review_time": "2026-09-29T09:00:00+00:00",
+        "generation_ms": 2242,
+        "prompt_version": "reviewmind-2026-09-28-v2",
+        "decision_revision": 1
+      },
+      "output": {
+        "waived": [],
+        "summary": "Review limited to the supplied change and context.",
+        "evidence": [],
+        "findings": [
+          {
+            "id": "dacbfda6-cfcf-481b-808a-ab1a5758f137",
+            "file": "src/adapters/legacy/status.ts",
+            "message": "Adapter does not use the shared transport wrapper, so instrumentation (e.g., duration logging) is missing.",
+            "category": "convention",
+            "line_end": 8,
+            "rule_key": "transport-wrapper",
+            "severity": "low",
+            "line_start": 5,
+            "suggestion": "Import the transport function from src/lib/transport.ts and replace the direct request call with transport(url, { timeout: 2000 }). This ensures consistent instrumentation across adapters.",
+            "evidence_refs": []
+          }
+        ],
+        "questions": [
+          "Should this adapter be updated to use the shared transport wrapper for consistency and instrumentation?"
+        ],
+        "limitations": [
+          "Analysis is limited to the provided diff and surrounding files; other parts of the codebase may affect the applicability of the transport-wrapper convention.",
+          "Synthetic repository. This review is limited to supplied context and does not certify merge safety.",
+          "Timeout analysis supports only documented fixture call patterns."
+        ],
+        "truncated_findings": 0
+      }
+    },
+    {
+      "id": "948894b5-228e-4331-a5cd-b154975f04b1",
+      "status": "complete",
+      "metadata": {
+        "model": "openai/gpt-oss-120b",
+        "usage": [
+          {
+            "queue_time": 0.355908167,
+            "total_time": 1.6262559410000001,
+            "prompt_time": 0.080335747,
+            "total_tokens": 1931,
+            "prompt_tokens": 1198,
+            "completion_time": 1.545920194,
+            "completion_tokens": 733,
+            "completion_tokens_details": {
+              "reasoning_tokens": 535
+            }
+          }
+        ],
+        "recall": {
+          "status": "no_approved_memory",
+          "verified": 9,
+          "retrieved": 20
+        },
+        "attempts": 1,
+        "settings": {
+          "temperature": 0,
+          "max_completion_tokens": 2500
+        },
+        "review_ms": 3148,
+        "input_hash": "b14577d3752a2b30ba5dda27b8387c055afe18295b5c623b24faed94a1f251c5",
+        "review_time": "2026-09-29T09:00:00+00:00",
+        "generation_ms": 2167,
+        "prompt_version": "reviewmind-2026-09-28-v2",
+        "decision_revision": 1
+      },
+      "output": {
+        "waived": [],
+        "summary": "Review limited to the supplied change and context.",
+        "evidence": [],
+        "findings": [
+          {
+            "id": "a35aa786-9539-4bd2-890b-5e3d935a0da4",
+            "file": "src/adapters/legacy/status.ts",
+            "message": "Adapter directly uses request instead of the shared transport wrapper, missing instrumentation and consistent logging.",
+            "category": "convention",
+            "line_end": 8,
+            "rule_key": "transport-wrapper",
+            "severity": "low",
+            "line_start": 5,
+            "suggestion": "Import and use the transport function from src/lib/transport.ts to wrap the request, e.g., const response = await transport('/orders/' + encodeURIComponent(orderId) + '/status', { headers: { 'X-Client': 'democart' }, timeout: 2000 });",
+            "evidence_refs": []
+          }
+        ],
+        "questions": [],
+        "limitations": [
+          "Analysis limited to static code inspection; runtime behavior and endpoint availability are not verified.",
+          "Synthetic repository. This review is limited to supplied context and does not certify merge safety.",
+          "Timeout analysis supports only documented fixture call patterns."
+        ],
+        "truncated_findings": 0
+      }
+    },
+    {
+      "id": "77691ea4-a51d-4c51-a877-c6a325f228c8",
+      "status": "complete",
+      "metadata": {
+        "model": "openai/gpt-oss-120b",
+        "usage": [
+          {
+            "queue_time": 0.405663744,
+            "total_time": 1.697999449,
+            "prompt_time": 0.060748637,
+            "total_tokens": 1886,
+            "prompt_tokens": 1198,
+            "completion_time": 1.637250812,
+            "completion_tokens": 688,
+            "completion_tokens_details": {
+              "reasoning_tokens": 499
+            }
+          }
+        ],
+        "recall": {
+          "status": "no_approved_memory",
+          "verified": 9,
+          "retrieved": 20
+        },
+        "attempts": 1,
+        "settings": {
+          "temperature": 0,
+          "max_completion_tokens": 2500
+        },
+        "review_ms": 7086,
+        "input_hash": "b14577d3752a2b30ba5dda27b8387c055afe18295b5c623b24faed94a1f251c5",
+        "review_time": "2026-09-29T09:00:00+00:00",
+        "generation_ms": 2288,
+        "prompt_version": "reviewmind-2026-09-28-v2",
+        "decision_revision": 1
+      },
+      "output": {
+        "waived": [],
+        "summary": "Review limited to the supplied change and context.",
+        "evidence": [],
+        "findings": [
+          {
+            "id": "58084eda-d101-4394-9752-a3f7f6ad353d",
+            "file": "src/adapters/legacy/status.ts",
+            "message": "The adapter makes HTTP requests directly via 'request' instead of using the shared transport wrapper, missing standardized instrumentation and logging.",
+            "category": "convention",
+            "line_end": 8,
+            "rule_key": "transport-wrapper",
+            "severity": "medium",
+            "line_start": 5,
+            "suggestion": "Import the transport function from 'src/lib/transport.ts' and replace the direct request call with a call to transport, e.g., `const response = await transport('/orders/' + encodeURIComponent(orderId) + '/status', { timeout: 2000 });` to ensure consistent instrumentation.",
+            "evidence_refs": []
+          }
+        ],
+        "questions": [],
+        "limitations": [
+          "Synthetic repository. This review is limited to supplied context and does not certify merge safety.",
+          "Timeout analysis supports only documented fixture call patterns."
+        ],
+        "truncated_findings": 0
+      }
+    }
+  ]
+}

@@ -5,7 +5,7 @@ import {parseReviewInput} from '../../../packages/contracts/src/input.js';
 import {resolveDecisions,validateDecision} from '../../../packages/decision-engine/src/index.js';
 import {checkTimeout} from '../../../packages/decision-engine/src/timeout.js';
 import {MemoryAdapter,memoryError,type CanonicalEvent} from '../../../packages/memory/src/index.js';
-import {Reviewer} from '../../../packages/reviewer/src/index.js';
+import {Reviewer,PROMPT_VERSION} from '../../../packages/reviewer/src/index.js';
 const delay=(ms:number)=>new Promise(r=>setTimeout(r,ms));
 export function memory(){return new MemoryAdapter(config.hindsightUrl,config.hindsightKey);}
 async function updateFenced(table:string,job:any,values:Record<string,unknown>){return query(db().from(table).update(values).eq('id',job.id).eq('lease_token',job.lease_token).select('id'));}
@@ -60,7 +60,7 @@ async function runReview(job:any){
  const started=Date.now();const parsed=parseReviewInput(job.input);const recalled=await reviewEvidence(job,parsed);
  await updateFenced('review_runs',job,{status:'generating',metadata:{recall:recalled.recall,started_at:new Date().toISOString()}});
  const reviewer=new Reviewer(config.llmUrl,config.llmKey,config.model);
- const result=await reviewer.generate(parsed,recalled.evidence,job.review_time,async payload=>{await query(db().from('provider_records').insert({review_id:job.id,payload}));});
+ const result=await reviewer.generate(parsed,recalled.evidence,job.review_time,async payload=>{await query(db().from('provider_records').insert({review_id:job.id,payload:{...payload as object,reviewmind_prompt_version:PROMPT_VERSION}}));});
  await updateFenced('review_runs',job,{status:'validating'});
  await rpc('complete_review',{p_id:job.id,p_token:job.lease_token,p_output:{...result.output,evidence:recalled.evidence},p_metadata:{...result.metadata,recall:recalled.recall,review_ms:Date.now()-started,review_time:job.review_time,decision_revision:job.decision_revision}});
 }
@@ -91,7 +91,7 @@ export function startWorker(){
  const busy=new Set<string>();let stopped=false;
  async function tick(kind:string){
   if(stopped||busy.has(kind)||!configurationStatus().database)return;busy.add(kind);
-  try{const job=await rpc('claim_job',{p_kind:kind,p_lease_seconds:150});if(job){try{await(kind==='memory'?runMemory:kind==='review'?runReview:runDraft)(job);}catch(e){await fail(kind,job,e);}}}
+  try{const job=await rpc('claim_job',{p_kind:'v2:'+kind,p_lease_seconds:150});if(job){try{await(kind==='memory'?runMemory:kind==='review'?runReview:runDraft)(job);}catch(e){await fail(kind,job,e);}}}
   catch{/* Errors are recorded per job; do not print secret-bearing provider messages. */}
   finally{busy.delete(kind);}
  }

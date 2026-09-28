@@ -1,0 +1,69 @@
+{
+  "checked_at": "2026-09-28T16:05:01.822Z",
+  "scope": "Authenticated local API and live worker review of PR-A using real Hindsight recall and generation, before exception approval. Not a browser walkthrough or full approval loop.",
+  "review": {
+    "id": "2b349969-0a54-4fa7-bba3-8cea0dc597ab",
+    "status": "complete",
+    "mode": "memory",
+    "metadata": {
+      "model": "openai/gpt-oss-120b",
+      "usage": [
+        {
+          "queue_time": 0.339691613,
+          "total_time": 1.587278629,
+          "prompt_time": 0.052880289,
+          "total_tokens": 1915,
+          "prompt_tokens": 1198,
+          "completion_time": 1.53439834,
+          "completion_tokens": 717,
+          "completion_tokens_details": {
+            "reasoning_tokens": 489
+          }
+        }
+      ],
+      "recall": {
+        "status": "no_approved_memory",
+        "verified": 9,
+        "retrieved": 20
+      },
+      "attempts": 1,
+      "settings": {
+        "temperature": 0,
+        "max_completion_tokens": 2500
+      },
+      "review_ms": 4379,
+      "input_hash": "b14577d3752a2b30ba5dda27b8387c055afe18295b5c623b24faed94a1f251c5",
+      "review_time": "2026-09-29T09:00:00+00:00",
+      "generation_ms": 2596,
+      "prompt_version": "reviewmind-2026-09-28-v2",
+      "decision_revision": 1
+    },
+    "output": {
+      "waived": [],
+      "summary": "Review limited to the supplied change and context.",
+      "evidence": [],
+      "findings": [
+        {
+          "id": "5eee8371-6bc6-40e3-98e5-d962c325d02d",
+          "file": "src/adapters/legacy/status.ts",
+          "message": "The adapter makes a raw request instead of using the shared transport wrapper, missing standardized instrumentation (e.g., duration logging).",
+          "category": "convention",
+          "line_end": 8,
+          "rule_key": "transport-wrapper",
+          "severity": "medium",
+          "line_start": 5,
+          "suggestion": "Import the transport function from src/lib/transport.ts and replace the request call with transport('/orders/' + encodeURIComponent(orderId) + '/status', { headers: { 'X-Client': 'democart' }, timeout: 2000 }). This ensures consistent logging and instrumentation across adapters.",
+          "evidence_refs": []
+        }
+      ],
+      "questions": [
+        "Should the legacy status adapter be updated to use the shared transport wrapper for consistency with other HTTP adapters?"
+      ],
+      "limitations": [
+        "Synthetic repository. This review is limited to supplied context and does not certify merge safety.",
+        "Timeout analysis supports only documented fixture call patterns."
+      ],
+      "truncated_findings": 0
+    }
+  }
+}

@@ -1,11 +1,101 @@
 {
-  "started_at": "2026-09-28T05:18:15.553Z",
+  "started_at": "2026-09-28T15:48:37.391Z",
   "kind": "real-provider-integration",
-  "status": "blocked",
-  "steps": [],
-  "error": {
-    "code": "CONFIGURATION_MISSING",
-    "message": "Check configured accounts and the last completed step. No provider secrets are recorded."
-  },
-  "finished_at": "2026-09-28T05:18:15.575Z"
+  "status": "passed",
+  "steps": [
+    {
+      "step": "supabase_auth",
+      "status": "passed"
+    },
+    {
+      "step": "supabase_persistence_rls",
+      "status": "passed",
+      "repo_id": "e4251067-2cac-49ff-ad92-a244c7ea0149"
+    },
+    {
+      "step": "retain",
+      "status": "passed",
+      "event_id": "f2ad2190-4026-4432-9dbc-9f984a5e9d15",
+      "operation_id": "e714aff4-b650-4f30-ad2c-f1dda7e76f53"
+    },
+    {
+      "step": "fresh_client_recall_provenance",
+      "status": "passed",
+      "fact_ids": [
+        "1c433edd-3de3-4f90-88dd-12d6c183d53b"
+      ],
+      "event_id": "f2ad2190-4026-4432-9dbc-9f984a5e9d15",
+      "ingestion_ready_ms": 9858
+    },
+    {
+      "step": "document_resolution",
+      "status": "passed"
+    },
+    {
+      "step": "reflect_structured_with_verified_sources",
+      "status": "passed",
+      "draft": {
+        "kind": "temporary_exception",
+        "rule_key": "transport-wrapper",
+        "scope": {
+          "path_glob": "src/adapters/legacy/**",
+          "dependency_name": "bridge-client",
+          "version_range": ">=1.8.0 <2.0.0",
+          "effective_from": "2026-09-29T09:00:00Z",
+          "expires_at": "2026-09-30T00:00:00Z",
+          "prerequisites": []
+        },
+        "rationale": "Synthetic bridge-client 1.8 wrapper incompatibility on legacy adapters; explicit timeout remains required.",
+        "source_event_ids": [
+          "f2ad2190-4026-4432-9dbc-9f984a5e9d15"
+        ],
+        "supersedes_id": null
+      }
+    },
+    {
+      "step": "structured_generation",
+      "status": "passed",
+      "result": {
+        "output": {
+          "summary": "Review limited to the supplied change and context.",
+          "findings": [],
+          "questions": [
+            "Should the loadStatus function include error handling for request failures and non‑JSON responses to improve reliability?"
+          ],
+          "limitations": [
+            "Synthetic repository. This review is limited to supplied context and does not certify merge safety.",
+            "Timeout analysis supports only documented fixture call patterns."
+          ],
+          "waived": [],
+          "truncated_findings": 0
+        },
+        "metadata": {
+          "model": "openai/gpt-oss-120b",
+          "prompt_version": "reviewmind-2026-09-28-v1",
+          "settings": {
+            "temperature": 0,
+            "max_completion_tokens": 2500
+          },
+          "input_hash": "22fbea9312eea4c361c50aa1d78ad99dc7b508019f6a41fa6f03a7eaea7d2ce7",
+          "attempts": 1,
+          "usage": [
+            {
+              "queue_time": 2.479120257,
+              "prompt_tokens": 1084,
+              "prompt_time": 0.055696924,
+              "completion_tokens": 1248,
+              "completion_time": 2.608729199,
+              "total_tokens": 2332,
+              "total_time": 2.664426123,
+              "completion_tokens_details": {
+                "reasoning_tokens": 1161
+              }
+            }
+          ],
+          "generation_ms": 5326
+        }
+      }
+    }
+  ],
+  "finished_at": "2026-09-28T15:49:07.053Z"
 }

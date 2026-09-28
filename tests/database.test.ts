@@ -11,6 +11,7 @@ beforeAll(async()=>{
  await pg.exec("create role anon;create role authenticated;create role service_role bypassrls;create schema auth;create table auth.users(id uuid primary key);create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;");
  const source=(await readFile('supabase/migrations/001_reviewmind.sql','utf8')).replace('create extension if not exists pgcrypto;','');
  await pg.exec(source);
+ await pg.exec(await readFile('supabase/migrations/002_worker_protocol.sql','utf8'));
  await pg.query('insert into auth.users(id) values($1),($2),($3)',[actor,viewer,outsider]);
  await pg.query("insert into workspaces(id,name) values($1,'Test workspace')",[workspace]);
  await pg.query("insert into memberships values($1,$2,'maintainer'),($1,$3,'viewer')",[workspace,actor,viewer]);
@@ -31,6 +32,8 @@ describe('real local PostgreSQL transaction tests (not Supabase integration)',()
  });
  it('approves transactionally and rejects a competing revision',async()=>{
   draft=(await call('create_decision_draft',[repo,actor,[feedback]])).decision_id;
+  expect(await call('claim_job',['draft',150])).toBeNull();
+  expect((await call('claim_job',['v2:draft',150])).id).toBe(draft);
   await pg.query("update decisions set draft_status='ready' where id=$1",[draft]);
   const d=(await pg.query<any>('select * from decisions where id=$1',[draft])).rows[0];
   const revision=(await pg.query<any>('select decision_revision from repositories where id=$1',[repo])).rows[0].decision_revision;
@@ -43,16 +46,18 @@ describe('real local PostgreSQL transaction tests (not Supabase integration)',()
  });
  it('rejects in-flight review when revision changes',async()=>{
   const id=(await call('enqueue_review',[repo,actor,JSON.stringify({mode:'memory'}),'hash2'])).review_id;
-  const job=await call('claim_job',['review',150]);expect(job.id).toBe(id);
+  expect(await call('claim_job',['review',150])).toBeNull();
+  const job=await call('claim_job',['v2:review',150]);expect(job.id).toBe(id);
   await pg.query('update repositories set decision_revision=decision_revision+1 where id=$1',[repo]);
   expect(await call('complete_review',[id,job.lease_token,'{}','{}'])).toBe(false);
   const saved=(await pg.query<any>('select * from review_runs where id=$1',[id])).rows[0];
   expect(saved.metadata.error.code).toBe('REVIEW_CONTEXT_CHANGED');
  });
  it('recovers an expired lease and fences stale completion',async()=>{
-  const job=await call('claim_job',['memory',150]);
+  expect(await call('claim_job',['memory',150])).toBeNull();
+  const job=await call('claim_job',['v2:memory',150]);
   await pg.query("update memory_jobs set lease_until=now()-interval '1 second' where id=$1",[job.id]);
-  const recovered=await call('claim_job',['memory',150]);expect(recovered.id).toBe(job.id);expect(recovered.lease_token).not.toBe(job.lease_token);
+  const recovered=await call('claim_job',['v2:memory',150]);expect(recovered.id).toBe(job.id);expect(recovered.lease_token).not.toBe(job.lease_token);
   expect(await call('ready_memory',[job.id,job.lease_token])).toBe(false);
   expect(await call('ready_memory',[recovered.id,recovered.lease_token])).toBe(true);
  });

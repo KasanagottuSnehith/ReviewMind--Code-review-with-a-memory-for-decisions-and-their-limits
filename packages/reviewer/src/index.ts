@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { AppError, BASELINE_RULE, WRAPPER_RULE, reviewOutputSchema, type ReviewOutput, type Finding, type Evidence } from '../../contracts/src/index.js';
 import { type ParsedInput } from '../../contracts/src/input.js';
 import { checkTimeout } from '../../decision-engine/src/timeout.js';
-export const PROMPT_VERSION='reviewmind-2026-09-28-v1';
+export const PROMPT_VERSION='reviewmind-2026-09-28-v2';
 export const STATIC_GUIDELINES=Object.freeze([
   {rule_key:WRAPPER_RULE,text:'HTTP adapters should use the shared transport wrapper for instrumentation. This is a team convention, not the fixed reliability baseline.'}
 ]);
@@ -63,6 +63,10 @@ export class Reviewer {
     // Provider schema excludes optional ID; server assigns stable IDs.
     const properties=(schema as any).properties.findings.items.properties;
     delete properties.id;
+    const allowedReferences=[...new Set(evidence.map(e=>'event:'+e.event_id))];
+    properties.evidence_refs.description='Only event references from validated_memory for the same rule_key. Static guidelines and rule names are not evidence references. Use [] when no such source exists.';
+    if(allowedReferences.length) properties.evidence_refs.items={type:'string',enum:allowedReferences};
+    else properties.evidence_refs.maxItems=0;
     const payload={
       current_input:parsed.input,review_time:time,baseline:[{rule_key:BASELINE_RULE,text:'Keep explicit 2-second request timeout. Non-waivable.'}],
       static_guidelines:parsed.input.mode==='generic'?[]:STATIC_GUIDELINES,
@@ -73,6 +77,8 @@ export class Reviewer {
       'At most five findings, actual new-side/context file line anchors, exact rule_key. Report concerns even when an exception may apply: the server alone applies waivers. '+
       'For learned conventions use the provided rule_key. Do not report a convention when its applicability is unresolved. Questions for uncertainty. '+
       'Do not claim code is safe. Do not make historical claims in prose; historical evidence is displayed separately. Sources must match the finding rule. '+
+      'evidence_refs contains only exact event:<uuid> references from validated_memory with the same rule_key. '+
+      'Static guidelines and rule names are not citations. When validated_memory is empty, every evidence_refs must be []. '+
       'No invented IDs. A rejected comment is not permission to ignore bugs.';
     const messages: {role:string;content:string}[]=[{role:'system',content:system},{role:'user',content:JSON.stringify(payload)}];
     const started=Date.now(); const attempts:unknown[]=[];
@@ -90,7 +96,9 @@ export class Reviewer {
           input_hash:createHash('sha256').update(JSON.stringify(payload)).digest('hex'),attempts:attempt+1,usage:attempts.map((a:any)=>a.usage??null),generation_ms:Date.now()-started}};
       } catch(error) {
         if(attempt===1) throw new AppError('GENERATION_VALIDATION_FAILED','The response failed validation after one repair. Input is preserved.',502);
-        messages.push({role:'assistant',content:body.choices?.[0]?.message?.content??'{}'},{role:'user',content:'Repair the JSON once. Validation error: '+(error instanceof AppError?error.code:'SCHEMA_INVALID')+'. Use only permitted anchors and sources.'});
+        messages.push({role:'assistant',content:body.choices?.[0]?.message?.content??'{}'},{role:'user',content:'Repair the JSON once. Validation error: '+(error instanceof AppError?error.code:'SCHEMA_INVALID')+'. Use only permitted anchors and sources. '+
+          'Allowed evidence references: '+JSON.stringify(allowedReferences)+'. Each reference must also match the finding rule_key. '+
+          'Rule names such as transport-wrapper are never citations. Use evidence_refs: [] for findings without a validated source. Do not invent historical claims.'});
       }
     }
     throw new AppError('GENERATION_FAILED','Generation did not complete.',502);

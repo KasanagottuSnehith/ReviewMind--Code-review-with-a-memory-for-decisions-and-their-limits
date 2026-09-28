@@ -1,0 +1,16 @@
+An old approval isn't a permanent exception.
+A code reviewer needs to remember its limits.
+
+I'm building ReviewMind around Hindsight agent memory to retain approval reasons and recall them in later reviews.
+
+Three rules in the implementation:
+- Match the path and dependency version.
+- Reject expired approvals.
+- Keep mandatory timeout checks.
+
+52 local tests pass. Live Hindsight verification is blocked by missing configuration; before/after results are next.
+
+Code: https://github.com/KasanagottuSnehith/ReviewMind--Code-review-with-a-memory-for-decisions-and-their-limits.
+
+@Code.in
+#Hindsight #AgentMemory #AIAgents #LLM
